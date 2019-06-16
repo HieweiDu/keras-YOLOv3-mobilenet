@@ -9,15 +9,15 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 import os
-from yolo3.model_Mobilenet import preprocess_true_boxes, yolo_body, tiny_yolo_body, yolo_loss
+from yolo3.model_MobilenetV2 import preprocess_true_boxes, yolo_body, tiny_yolo_body, yolo_loss
 from yolo3.utils import get_random_data
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 def _main():
-    train_path = 'car_train.txt'
-    val_path = 'car_val.txt'
+    train_path = 'train.txt'
+    val_path = '2012_val.txt'
     log_dir = 'logs/carMobilenet/001_Mobilenet_finetune/'
-    classes_path = 'model_data/car_classes.txt'
+    classes_path = 'model_data/voc_classes.txt'
     anchors_path = 'model_data/yolo_anchors.txt'
     class_names = get_classes(classes_path)
     num_classes = len(class_names)
@@ -64,7 +64,7 @@ def _main():
             # use custom yolo_loss Lambda layer.
             'yolo_loss': lambda y_true, y_pred: y_pred})
 
-        batch_size = 16
+        batch_size = 8
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
         model.fit_generator(data_generator_wrapper(t_lines, batch_size, input_shape, anchors, num_classes),
                 steps_per_epoch=max(1, num_train//batch_size),
